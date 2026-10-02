@@ -1,0 +1,374 @@
+{
+  "name": "Lead Research",
+  "nodes": [
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "={{ $json.message.text }}",
+        "options": {
+          "systemMessage": "You are AURA, an autonomous AI research and decision-making agent.\n\nYour job is to understand the user's goal, determine what information is needed, select the appropriate tools, perform research, analyze the results, and provide a clear conclusion.\n\n## TOOL SELECTION\n\nYou have access to multiple tools.\n\nDo not call tools randomly.\n\nBefore using a tool, determine whether it is necessary for the current task.\n\nUse User_Profile_Tool when you need verified information about the user's:\n- education\n- skills\n- projects\n- experience\n- achievements\n- career goals\n- professional links\n\nUse research/search tools when external information is required.\n\nUse a tool multiple times when additional information is needed.\n\nDo not ask the user for information that can be obtained from an available tool.\n\nDo not claim that information was retrieved unless the tool actually returned it.\n\n## REASONING PROCESS\n\nFor every task:\n\n1. Understand the user's objective.\n2. Determine what information is missing.\n3. Select the appropriate tool or tools.\n4. Retrieve the required information.\n5. Analyze the results.\n6. If the information is insufficient, use another tool or perform another research step.\n7. Stop researching when you have enough reliable information.\n8. Provide the user with a concise conclusion and the relevant evidence.\n\nNever invent information.\n\n## ITERATIVE RESEARCH\n\nResearch does not have to be completed in one tool call.\n\nAfter receiving a tool result, evaluate whether the information is sufficient.\n\nIf important information is missing or unclear, perform another appropriate tool call.\n\nDo not repeat the same tool call with the same input unless there is a clear reason.\n\nStop when you have enough reliable information to answer the user's objective.\n\n## LEAD QUALIFICATION\n\nWhen evaluating a lead, opportunity, company, job, or contact, analyze:\n\n- Relevance to the user's skills\n- Relevance to the user's projects and experience\n- Relevance to the user's career goals\n- Opportunity type\n- Potential value\n- Missing information\n- Important risks or uncertainties\n\nAlways retrieve the user's profile before making personalized qualification claims.\n\nDo not invent qualifications or experience.\n\nSeparate verified facts from your analysis.\n\n## DECISION SUMMARY\n\nWhen research or evaluation is complete, structure the response as:\n\n1. What was researched\n2. Key findings\n3. How the findings relate to the user's verified profile\n4. Important uncertainties\n5. Recommended next action\n\nDo not perform external actions unless the user explicitly authorizes them.\n\n## ERROR RECOVERY\n\nIf a tool fails:\n\n1. Do not pretend it worked.\n2. Determine whether the task can be completed using another available tool.\n3. Retry only when there is a reasonable alternative or corrected input.\n4. If the required information cannot be obtained, clearly tell the user what is missing.\n5. Never fabricate a tool result.",
+          "maxIterations": 5
+        }
+      },
+      "id": "e20b134a-e923-4c3c-acfb-94afca65c0af",
+      "name": "Lead Research Agent",
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 3.1,
+      "position": [
+        -2224,
+        96
+      ]
+    },
+    {
+      "parameters": {
+        "modelName": "models/gemini-3.5-flash-lite",
+        "options": {
+          "maxOutputTokens": 10000,
+          "temperature": 0.4
+        }
+      },
+      "id": "28872541-64b7-41c2-a57a-cc03a8492269",
+      "name": "Gemini Research Model",
+      "type": "@n8n/n8n-nodes-langchain.lmChatGoogleGemini",
+      "typeVersion": 1.1,
+      "position": [
+        -2384,
+        320
+      ],
+      "credentials": {
+        "googlePalmApi": {
+          "id": "yqBHtZQWXERxLW7T",
+          "name": "Google Gemini(PaLM) Api account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "toolDescription": "Searches LinkedIn profiles via an Apify actor and returns a list of people (name, headline/title, company, location, profile URL, email when available). Input: a concise search query combining job title, industry and location.",
+        "method": "POST",
+        "url": "https://api.apify.com/v2/acts/harvestapi~linkedin-profile-search/run-sync-get-dataset-items?token=apify_api_WYpmbcdD8rjbL4TI86uciC8yu0lHLX0ncrmw",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ JSON.stringify({ searchQuery: $fromAI('query', 'LinkedIn search keywords combining job title, industry and location, e.g. Sales Director SaaS Saudi Arabia', 'string'), maxItems: 15 }) }}",
+        "options": {
+          "timeout": 300000
+        },
+        "optimizeResponse": true
+      },
+      "id": "23fbf1e1-4a36-4d84-85df-ef3745c3b9f9",
+      "name": "LinkedIn_Search_Tool",
+      "type": "n8n-nodes-base.httpRequestTool",
+      "typeVersion": 4.5,
+      "position": [
+        -2080,
+        336
+      ]
+    },
+    {
+      "parameters": {
+        "description": "Retrieve Dalia Ammar's verified professional profile, including her academic background, technical skills, projects, achievements, career goals, and professional links.\n\nUse this tool whenever the user asks about her qualifications, requests a personalized professional message, evaluates a job opportunity against her skills, or needs accurate information about her background.\n\nAlways retrieve the profile before making claims about her qualifications.\n\nNever invent or exaggerate her experience.\n\nThis tool is read-only and must not modify the user's profile.\n",
+        "workflowId": {
+          "__rl": true,
+          "value": "G6vTXnNFueoc9df1",
+          "mode": "list",
+          "cachedResultUrl": "/workflow/G6vTXnNFueoc9df1",
+          "cachedResultName": "My Sub-Workflow 1"
+        },
+        "workflowInputs": {
+          "mappingMode": "defineBelow",
+          "value": {},
+          "matchingColumns": [
+            "request"
+          ],
+          "schema": [
+            {
+              "id": "request",
+              "displayName": "request",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "string",
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.toolWorkflow",
+      "typeVersion": 2.2,
+      "position": [
+        -1952,
+        320
+      ],
+      "id": "4a788ad9-e966-4678-9c9a-d46b858ca004",
+      "name": "User Profile Tool"
+    },
+    {
+      "parameters": {
+        "description": "The lead or opportunity information that needs to be evaluated.",
+        "workflowId": {
+          "__rl": true,
+          "value": "kowWfDd0t1RBaoSb",
+          "mode": "list",
+          "cachedResultUrl": "/workflow/kowWfDd0t1RBaoSb",
+          "cachedResultName": "My Sub-Workflow 2"
+        },
+        "workflowInputs": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "lead": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('lead', ``, 'json') }}",
+            "profile": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('profile', ``, 'json') }}"
+          },
+          "matchingColumns": [
+            "lead"
+          ],
+          "schema": [
+            {
+              "id": "lead",
+              "displayName": "lead",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "object",
+              "removed": false
+            },
+            {
+              "id": "profile",
+              "displayName": "profile",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "object",
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.toolWorkflow",
+      "typeVersion": 2.2,
+      "position": [
+        -1792,
+        288
+      ],
+      "id": "a19b4fb2-8092-483e-a108-04d3fa0df08b",
+      "name": "Lead_Qualification_Tool"
+    },
+    {
+      "parameters": {
+        "description": "Use this tool whenever the user wants to draft, generate, or send an email or official message to a recipient, employer, or client.",
+        "workflowId": {
+          "__rl": true,
+          "value": "dNjbeBhVG38k2wJA",
+          "mode": "list",
+          "cachedResultUrl": "/workflow/dNjbeBhVG38k2wJA",
+          "cachedResultName": "send message"
+        },
+        "workflowInputs": {
+          "mappingMode": "defineBelow",
+          "value": {},
+          "matchingColumns": [
+            "decision"
+          ],
+          "schema": [
+            {
+              "id": "decision",
+              "displayName": "decision",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "string",
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.toolWorkflow",
+      "typeVersion": 2.2,
+      "position": [
+        -1616,
+        304
+      ],
+      "id": "7332970d-bcea-47cf-ae86-88785cc1344e",
+      "name": "Message Tool"
+    },
+    {
+      "parameters": {
+        "updates": [
+          "*"
+        ],
+        "additionalFields": {}
+      },
+      "type": "n8n-nodes-base.telegramTrigger",
+      "typeVersion": 1.5,
+      "position": [
+        -2448,
+        96
+      ],
+      "id": "a667360f-1552-4ac3-98f8-e292a4cd53af",
+      "name": "Telegram Trigger",
+      "webhookId": "82b5ec14-f916-417d-bd4c-37cd78e160a3",
+      "credentials": {
+        "telegramApi": {
+          "id": "IUgB2B02P8vCfLyA",
+          "name": "Telegram account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "sessionIdType": "customKey",
+        "sessionKey": "={{ $json.message.chat.id }}",
+        "databaseName": "memory"
+      },
+      "type": "@n8n/n8n-nodes-langchain.memoryMongoDbChat",
+      "typeVersion": 1.1,
+      "position": [
+        -2240,
+        352
+      ],
+      "id": "ab7e4e72-846f-404f-94ee-5a8577bee4f1",
+      "name": "MongoDB Chat Memory",
+      "credentials": {
+        "mongoDb": {
+          "id": "C94jobVyRHQ9Jy1B",
+          "name": "MongoDB account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "chatId": "={{ $('Telegram Trigger').item.json.message.from.id }}",
+        "text": "={{ $json.output }}",
+        "additionalFields": {}
+      },
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        -1792,
+        96
+      ],
+      "id": "482e59fd-87d9-4370-b854-63fbd9b0ba2f",
+      "name": "Send a text message",
+      "webhookId": "3970f569-9d4a-4ee2-b760-bb80d2340b0b",
+      "credentials": {
+        "telegramApi": {
+          "id": "IUgB2B02P8vCfLyA",
+          "name": "Telegram account"
+        }
+      }
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Lead Research Agent": {
+      "main": [
+        [
+          {
+            "node": "Send a text message",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Gemini Research Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Lead Research Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "LinkedIn_Search_Tool": {
+      "ai_tool": [
+        [
+          {
+            "node": "Lead Research Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "User Profile Tool": {
+      "ai_tool": [
+        [
+          {
+            "node": "Lead Research Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Lead_Qualification_Tool": {
+      "ai_tool": [
+        [
+          {
+            "node": "Lead Research Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Message Tool": {
+      "ai_tool": [
+        [
+          {
+            "node": "Lead Research Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Telegram Trigger": {
+      "main": [
+        [
+          {
+            "node": "Lead Research Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "MongoDB Chat Memory": {
+      "ai_memory": [
+        [
+          {
+            "node": "Lead Research Agent",
+            "type": "ai_memory",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate"
+  },
+  "versionId": "57d0ce40-8794-4672-a15f-408ea697159b",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "a47dbb0c130a6fe3f2b4d1976ea7e5a281f34f1741b268fe55ccd032e0df54b0"
+  },
+  "nodeGroups": [],
+  "id": "5RxXFXVwzgpkp63a",
+  "tags": []
+}

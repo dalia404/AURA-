@@ -1,0 +1,343 @@
+{
+  "name": "send message",
+  "nodes": [
+    {
+      "parameters": {
+        "workflowInputs": {
+          "values": [
+            {
+              "name": "decision"
+            },
+            {
+              "name": "recipient_email"
+            },
+            {
+              "name": "email_subject"
+            },
+            {
+              "name": "email_body"
+            }
+          ]
+        },
+        "returnOutput": "allRuns"
+      },
+      "id": "c055762a-8fe7-4141-a639-df2372f30060",
+      "typeVersion": 1.1,
+      "name": "When Executed by Another Workflow",
+      "type": "n8n-nodes-base.executeWorkflowTrigger",
+      "position": [
+        320,
+        352
+      ]
+    },
+    {
+      "parameters": {
+        "rules": {
+          "values": [
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 3
+                },
+                "conditions": [
+                  {
+                    "leftValue": "={{ $json.query.decision }}",
+                    "rightValue": "approve",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    },
+                    "id": "ea6960b9-335f-4f9f-b7fa-6d5972e6de6e"
+                  }
+                ],
+                "combinator": "and"
+              }
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 3
+                },
+                "conditions": [
+                  {
+                    "id": "d1f8b365-0cca-4ebc-abf3-68d45a647762",
+                    "leftValue": "={{ $json.query.decision }}",
+                    "rightValue": "reject",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals",
+                      "name": "filter.operator.equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              }
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.switch",
+      "typeVersion": 3.4,
+      "position": [
+        1904,
+        656
+      ],
+      "id": "f567bc13-5ebe-4cc4-92ac-8be635756203",
+      "name": "Switch"
+    },
+    {
+      "parameters": {
+        "mode": "raw",
+        "jsonOutput": "{\n  \"status\": \"Cancelled\",\n  \"message\": \"Email sending was rejected by user.\"\n}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.5,
+      "position": [
+        2208,
+        720
+      ],
+      "id": "4561ce14-076c-44b2-9412-a4518311a168",
+      "name": "Edit Fields1"
+    },
+    {
+      "parameters": {
+        "sendTo": "={{ $('Draft Creation').item.json.recipient_email }}",
+        "subject": "={{ $('Draft Creation').item.json.email_subject }}",
+        "emailType": "text",
+        "message": "={{ $('Draft Creation').item.json.email_body }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.2,
+      "position": [
+        2208,
+        464
+      ],
+      "id": "d29d7748-d3f6-47b1-9a3a-bcca82ef3a58",
+      "name": "Send a message",
+      "webhookId": "6c40a27c-80d4-4451-8db3-27be5251d429",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "JS9kmkGNzjdpY41R",
+          "name": "Gmail account 3"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=Please write a professional email based on the following lead and context:\n\nRecipient/Lead Details:\n{{ $json.lead || \"A potential client/collaborator\" }}\n\nKey Strengths/Profile Context to include:\n{{ $json.profile || \"AI Automation & Agentic Systems Engineering Expertise\" }}\n\nTask:\nGenerate a compelling subject line and email body tailored to this specific lead. Format the output as clean JSON with \"subject\" and \"body\" fields.",
+        "options": {
+          "systemMessage": "You are an expert Professional Email Copywriter for AURA.\n\nYour task:\nWrite a personalized, highly persuasive, and professional outreach email to a potential client or lead.\n\nRules:\n- Match the tone to the opportunity context.\n- Highlight relevant strengths and verified skills accurately without exaggerating.\n- End with a clear, polite Call to Action (CTA).\n- Return your output in structured JSON with two keys: \"subject\" and \"body\"."
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 3.1,
+      "position": [
+        544,
+        352
+      ],
+      "id": "18c235af-9be5-4edd-b534-3c90ca5870bb",
+      "name": "AI Agent"
+    },
+    {
+      "parameters": {
+        "modelName": "models/gemini-3.5-flash",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatGoogleGemini",
+      "typeVersion": 1.2,
+      "position": [
+        416,
+        560
+      ],
+      "id": "50bcf884-8dc5-4cfa-b858-703c3b25f541",
+      "name": "Google Gemini Chat Model",
+      "credentials": {
+        "googlePalmApi": {
+          "id": "yqBHtZQWXERxLW7T",
+          "name": "Google Gemini(PaLM) Api account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "const inputItem = $input.first();\nconst input = inputItem.json;\nconst binaryData = inputItem.binary; \n\nlet subject = \"Strategic Operational Scaling: Agentic AI Systems\";\nlet body = \"No content generated\";\nlet recipientEmail = \"client@example.com\";\nlet hasAttachment = false;\nlet attachmentName = \"\";\n\nif (binaryData && (binaryData.attachment || binaryData.data)) {\n  hasAttachment = true;\n  const fileObj = binaryData.attachment || binaryData.data;\n  attachmentName = fileObj.fileName || \"CV_Attachment.pdf\";\n}\n\nfunction extractData(obj) {\n  if (!obj) return;\n  if (obj.subject || obj.email_subject) subject = obj.subject || obj.email_subject;\n  if (obj.body || obj.email_body || obj.text) body = obj.body || obj.email_body || obj.text;\n  if (obj.recipient_email || obj.email || obj.to) recipientEmail = obj.recipient_email || obj.email || obj.to;\n}\n\nextractData(input);\n\nif (input.output) {\n  if (typeof input.output === 'object') {\n    extractData(input.output);\n  } else if (typeof input.output === 'string') {\n    try {\n      const parsed = JSON.parse(input.output);\n      extractData(parsed);\n    } catch (e) {\n      body = input.output;\n    }\n  }\n}\n\nif (!recipientEmail || String(recipientEmail).trim() === \"\") {\n  recipientEmail = \"client@example.com\";\n}\n\n// 1. جلب رابط الاستئناف\nlet resumeUrl = $execution.resumeUrl;\n\n// 2. معالجة وضع الاختبار اليدوي\nif (!resumeUrl || String(resumeUrl).includes('{resumeUrl}')) {\n  resumeUrl = \"https://example.com/test-approval\"; \n}\n\n// 3. بناء الرابط بأسلوب JavaScript الصحيح\nconst separator = resumeUrl.includes('?') ? '&' : '?';\nconst approveUrl = `\\({resumeUrl}\\){separator}decision=approve`;\nconst rejectUrl  = `\\({resumeUrl}\\){separator}decision=reject`;\n\n// 4. إرجاع المخرجات مع الحفاظ على ملف الـ Binary إن وجد\nreturn [{\n  json: {\n    recipient_email: recipientEmail,\n    email_subject: subject,\n    email_body: body,\n    has_attachment: hasAttachment,\n    attachment_name: attachmentName,\n    approve_url: approveUrl,\n    reject_url: rejectUrl\n  },\n  binary: binaryData\n}];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        912,
+        352
+      ],
+      "id": "534824f2-0749-468c-8de6-3f0cd9d5911e",
+      "name": "Code in JavaScript"
+    },
+    {
+      "parameters": {
+        "mode": "raw",
+        "jsonOutput": "{\"status\": \"Message queued for human approval\"}\n",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.5,
+      "position": [
+        1712,
+        144
+      ],
+      "id": "a1e20a89-abf8-4ebd-8e92-6d6cf9acb2d9",
+      "name": "Edit Fields"
+    },
+    {
+      "parameters": {
+        "resume": "webhook",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.wait",
+      "typeVersion": 1.1,
+      "position": [
+        1696,
+        656
+      ],
+      "id": "19e89a06-97f7-4c2e-9625-048b30f90dbb",
+      "name": "Wait",
+      "webhookId": "671774e0-fbb4-4008-bf32-4a2ea7890a33"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://api.telegram.org/bot8955333087:AAEmjYAo54c_SeAzwcBSAO0U5w9vgHan6pw/sendMessage",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "=={{\n  JSON.stringify({\n    \"chat_id\": \"806325635\",\n    \"parse_mode\": \"HTML\",\n    \"text\": `**📩 طلب إرسال بريد إلكتروني جديد**\\n\\n**إلى:** \\({\\)json.recipient_email}\\n**الموضوع:** \\({\\)json.email_subject}\\n**المرفقات:** \\({\\)json.has_attachment ? $json.attachment_name : \"لا يوجد ملف مرفق\"}\\n\\n**نص الرسالة:**\\n\\({\\)json.email_body}`,\n    \"reply_markup\": {\n      \"inline_keyboard\": [\n        [\n          { \"text\": \"✅ موافقة\", \"url\": $json.approve_url },\n          { \"text\": \"❌ رفض\", \"url\": $json.reject_url }\n        ]\n      ]\n    }\n  })\n}}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.5,
+      "position": [
+        1200,
+        352
+      ],
+      "id": "336c98fd-14b1-4fd7-ac69-bb460da3c7ae",
+      "name": "HTTP Request"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "When Executed by Another Workflow": {
+      "main": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Switch": {
+      "main": [
+        [
+          {
+            "node": "Send a message",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Edit Fields1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "AI Agent": {
+      "main": [
+        [
+          {
+            "node": "Code in JavaScript",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google Gemini Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code in JavaScript": {
+      "main": [
+        [
+          {
+            "node": "HTTP Request",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit Fields": {
+      "main": [
+        []
+      ]
+    },
+    "Wait": {
+      "main": [
+        [
+          {
+            "node": "Switch",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "HTTP Request": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Wait",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": true,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate"
+  },
+  "versionId": "36a42773-2965-4d11-8631-db80b1edb705",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "a47dbb0c130a6fe3f2b4d1976ea7e5a281f34f1741b268fe55ccd032e0df54b0"
+  },
+  "nodeGroups": [],
+  "id": "dNjbeBhVG38k2wJA",
+  "tags": []
+}

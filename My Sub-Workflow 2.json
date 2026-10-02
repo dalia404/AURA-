@@ -1,0 +1,110 @@
+{
+  "name": "My Sub-Workflow 2",
+  "nodes": [
+    {
+      "parameters": {
+        "workflowInputs": {
+          "values": [
+            {
+              "name": "lead",
+              "type": "object"
+            },
+            {
+              "name": "profile",
+              "type": "object"
+            }
+          ]
+        },
+        "returnOutput": "allRuns"
+      },
+      "id": "c055762a-8fe7-4141-a639-df2372f30060",
+      "typeVersion": 1.1,
+      "name": "When Executed by Another Workflow",
+      "type": "n8n-nodes-base.executeWorkflowTrigger",
+      "position": [
+        272,
+        352
+      ]
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=Analyze the following lead against the user's verified professional profile.\n\nLEAD:\n{{ JSON.stringify($json.lead) }}\n\nUSER PROFILE:\n{{ JSON.stringify($json.profile) }}",
+        "options": {
+          "systemMessage": "You are a Lead Qualification Analyst.\n\nYour job is to analyze a lead or opportunity against the user's verified professional profile.\n\nEvaluate the lead using these dimensions:\n\n1. Skill alignment\n2. Project alignment\n3. Experience alignment\n4. Career-goal alignment\n5. Opportunity relevance\n6. Missing information\n7. Risks or uncertainties\n\nDo not invent information.\n\nSeparate:\n- Verified facts\n- Analysis\n- Unknown information\n\nReturn a structured qualification result.\n\nUse this format:\n\nLead:\n[lead name]\n\nSkill Alignment:\n[analysis]\n\nProject Alignment:\n[analysis]\n\nExperience Alignment:\n[analysis]\n\nCareer Goal Alignment:\n[analysis]\n\nMissing Information:\n[list]\n\nRisks / Uncertainties:\n[list]\n\nOverall Analysis:\n[concise factual summary]\n\nSuggested Next Step:\n[action that could be considered]"
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 3.1,
+      "position": [
+        464,
+        352
+      ],
+      "id": "2879e487-034b-4ee3-b0b1-f2cd4471970f",
+      "name": "AI Agent"
+    },
+    {
+      "parameters": {
+        "modelName": "models/gemini-3.5-flash",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatGoogleGemini",
+      "typeVersion": 1.1,
+      "position": [
+        416,
+        528
+      ],
+      "id": "f69ae4a1-4572-4816-ae3d-e34bec0582ce",
+      "name": "Google Gemini Chat Model",
+      "credentials": {
+        "googlePalmApi": {
+          "id": "yqBHtZQWXERxLW7T",
+          "name": "Google Gemini(PaLM) Api account"
+        }
+      }
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "When Executed by Another Workflow": {
+      "main": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "AI Agent": {
+      "main": [
+        []
+      ]
+    },
+    "Google Gemini Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": true,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate"
+  },
+  "versionId": "032a6ee5-55e9-46fd-ba6f-2765578eb3e1",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "a47dbb0c130a6fe3f2b4d1976ea7e5a281f34f1741b268fe55ccd032e0df54b0"
+  },
+  "nodeGroups": [],
+  "id": "kowWfDd0t1RBaoSb",
+  "tags": []
+}
