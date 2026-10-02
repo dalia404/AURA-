@@ -46,7 +46,7 @@
       "parameters": {
         "toolDescription": "Searches LinkedIn profiles via an Apify actor and returns a list of people (name, headline/title, company, location, profile URL, email when available). Input: a concise search query combining job title, industry and location.",
         "method": "POST",
-        "url": "https://api.apify.com/v2/acts/harvestapi~linkedin-profile-search/run-sync-get-dataset-items?token=apify_api_WYpmbcdD8rjbL4TI86uciC8yu0lHLX0ncrmw",
+        "url": "https://api.apify.com/v2/acts/harvestapi~linkedin-profile-search/run-sync-get-dataset-items?token=apify_api",
         "sendBody": true,
         "specifyBody": "json",
         "jsonBody": "={{ JSON.stringify({ searchQuery: $fromAI('query', 'LinkedIn search keywords combining job title, industry and location, e.g. Sales Director SaaS Saudi Arabia', 'string'), maxItems: 15 }) }}",
