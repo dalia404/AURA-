@@ -215,7 +215,7 @@
       ],
       "id": "a667360f-1552-4ac3-98f8-e292a4cd53af",
       "name": "Telegram Trigger",
-      "webhookId": "82b5ec14-f916-417d-bd4c-37cd78e160a3",
+      "webhookId": "",
       "credentials": {
         "telegramApi": {
           "id": "IUgB2B02P8vCfLyA",
@@ -258,7 +258,7 @@
       ],
       "id": "482e59fd-87d9-4370-b854-63fbd9b0ba2f",
       "name": "Send a text message",
-      "webhookId": "3970f569-9d4a-4ee2-b760-bb80d2340b0b",
+      "webhookId": "",
       "credentials": {
         "telegramApi": {
           "id": "IUgB2B02P8vCfLyA",
@@ -366,7 +366,7 @@
   "versionId": "57d0ce40-8794-4672-a15f-408ea697159b",
   "meta": {
     "templateCredsSetupCompleted": true,
-    "instanceId": "a47dbb0c130a6fe3f2b4d1976ea7e5a281f34f1741b268fe55ccd032e0df54b0"
+    "instanceId": ""
   },
   "nodeGroups": [],
   "id": "5RxXFXVwzgpkp63a",
