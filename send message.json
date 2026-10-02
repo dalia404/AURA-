@@ -123,7 +123,7 @@
       ],
       "id": "d29d7748-d3f6-47b1-9a3a-bcca82ef3a58",
       "name": "Send a message",
-      "webhookId": "6c40a27c-80d4-4451-8db3-27be5251d429",
+      "webhookId": "",
       "credentials": {
         "gmailOAuth2": {
           "id": "JS9kmkGNzjdpY41R",
@@ -214,10 +214,10 @@
     {
       "parameters": {
         "method": "POST",
-        "url": "https://api.telegram.org/bot8955333087:AAEmjYAo54c_SeAzwcBSAO0U5w9vgHan6pw/sendMessage",
+        "url": "",
         "sendBody": true,
         "specifyBody": "json",
-        "jsonBody": "=={{\n  JSON.stringify({\n    \"chat_id\": \"806325635\",\n    \"parse_mode\": \"HTML\",\n    \"text\": `**📩 طلب إرسال بريد إلكتروني جديد**\\n\\n**إلى:** \\({\\)json.recipient_email}\\n**الموضوع:** \\({\\)json.email_subject}\\n**المرفقات:** \\({\\)json.has_attachment ? $json.attachment_name : \"لا يوجد ملف مرفق\"}\\n\\n**نص الرسالة:**\\n\\({\\)json.email_body}`,\n    \"reply_markup\": {\n      \"inline_keyboard\": [\n        [\n          { \"text\": \"✅ موافقة\", \"url\": $json.approve_url },\n          { \"text\": \"❌ رفض\", \"url\": $json.reject_url }\n        ]\n      ]\n    }\n  })\n}}",
+        "jsonBody": "=={{\n  JSON.stringify({\n    \"chat_id\": \"\",\n    \"parse_mode\": \"HTML\",\n    \"text\": `**📩 طلب إرسال بريد إلكتروني جديد**\\n\\n**إلى:** \\({\\)json.recipient_email}\\n**الموضوع:** \\({\\)json.email_subject}\\n**المرفقات:** \\({\\)json.has_attachment ? $json.attachment_name : \"لا يوجد ملف مرفق\"}\\n\\n**نص الرسالة:**\\n\\({\\)json.email_body}`,\n    \"reply_markup\": {\n      \"inline_keyboard\": [\n        [\n          { \"text\": \"✅ موافقة\", \"url\": $json.approve_url },\n          { \"text\": \"❌ رفض\", \"url\": $json.reject_url }\n        ]\n      ]\n    }\n  })\n}}",
         "options": {}
       },
       "type": "n8n-nodes-base.httpRequest",
@@ -335,7 +335,7 @@
   "versionId": "36a42773-2965-4d11-8631-db80b1edb705",
   "meta": {
     "templateCredsSetupCompleted": true,
-    "instanceId": "a47dbb0c130a6fe3f2b4d1976ea7e5a281f34f1741b268fe55ccd032e0df54b0"
+    "instanceId": ""
   },
   "nodeGroups": [],
   "id": "dNjbeBhVG38k2wJA",
