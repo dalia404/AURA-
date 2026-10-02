@@ -68,59 +68,6 @@ Modular Architecture	Separates reasoning, tools, execution, and memory responsib
 
 ⸻
 
-System Architecture
-
-AURA follows a four-phase architecture:
-
-flowchart TB
-    U["User"] --> TG["Telegram Bot"]
-    TG --> ORC["n8n Main Orchestrator"]
-    ORC <--> LLM["Google Gemini Flash"]
-    subgraph P1["PHASE 1 — CONVERSATIONAL BRAIN"]
-        TG
-        ORC
-        LLM
-    end
-    subgraph P2["PHASE 2 — AGENTIC REASONING"]
-        ROUTER["Dynamic Tool Selection"]
-        SEARCH["LinkedIn Search — Apify"]
-        QUAL["Lead Qualification Engine"]
-        PROFILE["User Profile Memory"]
-        DRAFT["Outbound Message Drafting"]
-        ROUTER --> SEARCH
-        ROUTER --> QUAL
-        ROUTER --> PROFILE
-        ROUTER --> DRAFT
-    end
-    ORC --> ROUTER
-    subgraph P3["PHASE 3 — HUMAN-IN-THE-LOOP"]
-        REVIEW["Telegram Approval Interface"]
-        DECISION{"User Decision"}
-        EXEC["Gmail Executor"]
-        REVISE["Revise Draft"]
-        REJECT["Reject / Cancel"]
-        REVIEW --> DECISION
-        DECISION -->|Approve| EXEC
-        DECISION -->|Revise| REVISE
-        DECISION -->|Reject| REJECT
-        REVISE --> REVIEW
-    end
-    DRAFT --> REVIEW
-    subgraph P4["PHASE 4 — PERSISTENT MEMORY"]
-        DB[("MongoDB Atlas")]
-        HISTORY["Session History"]
-        CONTEXT["User Preferences & Context"]
-        STATE["Execution State"]
-        DB --> HISTORY
-        DB --> CONTEXT
-        DB --> STATE
-    end
-    ORC <--> DB
-    EXEC --> RESULT["Execution Result"]
-    RESULT --> TG
-
-⸻
-
 Four-Phase Architecture
 
 Phase 1 — Conversational Brain
